@@ -18,7 +18,7 @@ describe('Central de Atendimento ao Cliente TAT', () => {
       cy.get('#lastName').type('Carlos')
       cy.get('#email').type('caveira_dossantos@gmail.com')
       cy.get('#open-text-area').type(longText, {delay: 0}) // utilizar a troca da variável para aplicar texto em const longText
-      cy.get('button[type="submit"]').click()
+      cy.contains('button', 'Enviar').click()
 
       cy.get('.success').should('be.visible')
     
@@ -29,7 +29,7 @@ describe('Central de Atendimento ao Cliente TAT', () => {
     cy.get('#lastName').type('Carlos')
     cy.get('#email').type('caveira_dossantos@gmail,com')
     cy.get('#open-text-area').type('Test') // utilizar a troca da variável para aplicar texto em const longText
-    cy.get('button[type="submit"]').click()
+    cy.contains('button', 'Enviar').click()
     
     cy.get('.error').should('be.visible')
 
@@ -41,13 +41,13 @@ describe('Central de Atendimento ao Cliente TAT', () => {
       .should('have.value', '') // adicionar string vazia para identificar o telefone
   })
 
-  it('exibe mensagem de erro quando o telefone se torna obrigatório mas não é preenchido antes do envio do formulário', () => {
+  it.only('exibe mensagem de erro quando o telefone se torna obrigatório mas não é preenchido antes do envio do formulário', () => {
     cy.get('#firstName').type('Antonio')
     cy.get('#lastName').type('Carlos')
     cy.get('#email').type('caveira_dossantos@gmail,com')
     cy.get('#open-text-area').type('Teste') // utilizar a troca da variável para aplicar texto em const longText
-    cy.get('#phone-checkbox').click()
-    cy.get('button[type="submit"]').click()
+    cy.get('#phone-checkbox').check()
+    cy.contains('button', 'Enviar').click()
 
     cy.get('.error').should('be.visible')
 
@@ -76,8 +76,29 @@ describe('Central de Atendimento ao Cliente TAT', () => {
       .should('have.value', '')
   })
 
-  it.only('exibe mensagem de erro ao submeter o formulário sem preencher os campos obrigatórios', ()=> {
-    cy.get('button[type="submit"]').click()
-    cy.get('.error').should('be.visible')
+  it('marca o tipo de atendimento "Feedback"', () => {
+    cy.get('input[type="radio"][value="feedback"]')
+      .check()
+      .should('be.checked')
   })
+
+  it('marca cada tipo de atendimento', () =>{
+    cy.get('input[type="radio"]')
+      .each(typeOfService  => {
+        cy.wrap(typeOfService)
+          .check()
+          .should('be.checked')
+      })
+  })
+
+  it('marca ambos checkboxes, depois desmarca o último', () => {
+    cy.get('input[type="checkbox"]')
+      .check()
+      .should('be.checked')
+      .last()
+      .uncheck()
+      .should('not.be.checked')
+  })
+
+  
 })
